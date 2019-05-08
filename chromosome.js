@@ -39,6 +39,10 @@ function calc(env) {
         return chromosome;
     }
 
+    function rawFitnessMax(lesson) {
+        return 3*lesson.slots + lesson.slots - 1;
+    }
+
     function rawFitness(chromosome) {
         function addFreq(freq, val) {
             if (!freq[val]) {
@@ -168,7 +172,8 @@ function calc(env) {
         lessons,
         numDay, numRoom, numSlot,
         rawCrossover, rawMutate,
-        rawFitness, rawRandChromosome,
+        rawFitness, rawFitnessMax,
+        rawRandChromosome,
     };
 }
 
@@ -178,12 +183,18 @@ function makeChromosome(env, data) {
 }
 
 function chromosome(env) {
+    function sum(array) {
+        return array.reduce((a,b)=>a+b, 0);
+    }
+
+
     let data = [];
-    const length = env.lessons.map(l => l.slots)
-            .reduce((a,b)=>a+b, 0);
+    const length = sum(env.lessons.map(l => l.slots)); 
+    const maxFitness = sum(env.lessons.map(l => env.rawFitnessMax(l)));
 
     return {
         length,
+        maxFitness,
         getData() { return data; },
 
         clone() {

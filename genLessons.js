@@ -1,5 +1,3 @@
-
-
 function createClass(students, teachers, slots) {
     return {
         students,
@@ -25,7 +23,7 @@ function generateLesson(env) {
         lessons.push(createClass(
             genRand(1, numStudent),
             genRand(1, numTeacher),
-            1
+            parseInt(Math.random()*2)+1, 
         ));
     }
 
