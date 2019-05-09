@@ -23,7 +23,7 @@ function generateLesson(env) {
         lessons.push(createClass(
             genRand(1, numStudent),
             genRand(1, numTeacher),
-            parseInt(Math.random()*2)+1, 
+            (Math.random()<0.2) + 1, 
         ));
     }
 

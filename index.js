@@ -77,8 +77,28 @@ env.lessons = genLessons(env);
 const c = chromosome(env).randomize();
 
 let population = getGenesis();
-for(let i=0; i<100; i++) {
+for(let i=0; i<11; i++) {
     population = runGeneration(population);
-    printStats(population);
+
+    if (i%10===0) {
+        printStats(population);
+    }
 }
 console.log(population[0].maxFitness);
+
+const best = population[0];
+const { rooms, students, teachers } = best.getTimetable();
+
+for(let r=0; r<env.numRoom; r++) {
+    console.log('\n\nRoom', r);
+    for(let d=0; d<env.numDay; d++) {
+        const slots = [];
+        
+        if (rooms[r][d]) {
+            for(let s=0; s<env.numSlot; s++) {
+                slots.push((rooms[r][d][s] || [ {lessonId:' '} ])[0].lessonId);
+            }
+        }
+        console.log('Day', d, '\t', slots.join('\t|'));
+    }
+}
