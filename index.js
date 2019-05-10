@@ -1,5 +1,6 @@
 const chromosome = require('./chromosome.js');
 const genLessons = require('./genLessons.js');
+const getHTMLTable = require('./getHTMLTable.js');
 
 const maxPop = 500;
 const perRandom = 0.2;
@@ -16,12 +17,13 @@ function sortByFitness(population) {
         .sort().reverse().map(x => x[1]);
 }
 
-function printStats(population) {
+function getStats(population) {
     const l = population.length;
-    console.log(
+
+    return [
         population[0].fitness(),
         population[parseInt(l/2)].fitness(),
-        population[l-1].fitness());
+        population[l-1].fitness()].join(' ');
 }
 
 //=== genetic algo ===/
@@ -36,7 +38,7 @@ function getGenesis() {
 function runGeneration(gen1) {
     const size = gen1.length;
 
-    // culling 
+    // culling
     const gen2 = sortByFitness(gen1).slice(0, parseInt((1-perCulling)*size));
     const size2 = gen2.length;
 
@@ -48,13 +50,13 @@ function runGeneration(gen1) {
     for(let i=0; i<size*perCrossOver; i++) {
         gen2.push(gen2[rand()].crossover(gen2[rand()]));
     }
-    
+
     // mutation
     for(let i=0; i<size*perMutation; i++) {
         gen2.push(gen2[rand()].mutate());
     }
 
-    // random new chromosome 
+    // random new chromosome
     const gene = gen1[0];
     for(let i=0; i<size*perRandom; i++) {
         gen2.push(gene.clone().randomize(gene.length*varMutationCount));
@@ -68,7 +70,7 @@ const env = {
     numStudent: 20,
     numTeacher: 7,
     numClass: 80,
-    
+
     numDay: 5,
     numRoom: 6,
     numSlot: 10,
@@ -77,28 +79,39 @@ env.lessons = genLessons(env);
 const c = chromosome(env).randomize();
 
 let population = getGenesis();
+const stats = [];
 for(let i=0; i<11; i++) {
     population = runGeneration(population);
 
     if (i%10===0) {
-        printStats(population);
+        stats.push(`<li>${getStats(population)}</li>`);
     }
 }
-console.log(population[0].maxFitness);
+
+const html = [];
+html.push(`<h2>Population Max Fitness: ${population[0].maxFitness}</h2>`);
+html.push(`<ul>${stats.join('')}</ul>`);
 
 const best = population[0];
 const { rooms, students, teachers } = best.getTimetable();
 
+html.push(`<h2>Room Timetable</h2>`);
 for(let r=0; r<env.numRoom; r++) {
-    console.log('\n\nRoom', r);
-    for(let d=0; d<env.numDay; d++) {
-        const slots = [];
-        
-        if (rooms[r][d]) {
-            for(let s=0; s<env.numSlot; s++) {
-                slots.push((rooms[r][d][s] || [ {lessonId:' '} ])[0].lessonId);
-            }
+    function formatLesson(slot) {
+        if (!slot) {
+            return '';
         }
-        console.log('Day', d, '\t', slots.join('\t|'));
+
+        const lessons = [];
+        for(let i=0; i<slot.length; i++) {
+            lessons.push(`<strong>${slot[i].lessonId}</strong>`);
+        }
+
+        return lessons.join(`<hr/>`);
     }
+
+    html.push(`<h3>Room ${r}</h3>`);
+    html.push(getHTMLTable(rooms[r], env.numDay, env.numSlot, formatLesson));
 }
+
+console.log(`<html><body>${html.join('\n')}</body></html>`);
