@@ -1,0 +1,44 @@
+<html>
+    <style>
+        td {
+            height: 4rem;
+            min-width: 5rem;
+
+            text-align: center;
+            line-height: 2rem;
+            vertical-align: top;
+
+            padding: 0 0.5rem;
+        } 
+
+        td.header, td:first-child {
+            height: 2rem;
+            background: #ddd;
+        }
+    </style>
+    <script>
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function show(id) {
+            const eles = 'rooms students teachers'.split(' ');
+            for (let i=0; i<eles.length; i++) {
+                $(eles[i]).style.display = 'none';
+            }
+
+            $(id).style.display = '';
+        }
+        
+        function hideOthers() {
+            $('students').style.display = 'none';
+            $('teachers').style.display = 'none';
+        }
+    </script>
+<body onload="hideOthers();">
+    <button onclick="show('rooms');">rooms</button>
+    <button onclick="show('students');">students</button>
+    <button onclick="show('teachers');">teachers</button>
+    {{html}}    
+</body>
+</html>

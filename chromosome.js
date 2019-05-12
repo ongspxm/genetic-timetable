@@ -206,6 +206,7 @@ function chromosome(env) {
     const maxFitness = sum(env.lessons.map(l => env.rawFitnessMax(l)));
 
     return {
+        env,
         length,
         maxFitness,
         getData() { return data; },
